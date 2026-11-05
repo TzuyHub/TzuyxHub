@@ -1,16 +1,17 @@
 -- =====================================================================
--- BLOX FRUIT CHECKER v4.0 — DIRECT WEBHOOK (KHÔNG CẦN SERVER)
+-- BLOX FRUIT CHECKER v4.0 — BẢN HOÀN CHỈNH (KHÔNG CẦN SERVER)
 -- Chức năng: Xác thực tài khoản, check kho mỗi 60s, báo cáo khi nhấn P
 -- =====================================================================
 
 -- ╔═══════════════════════════════════════════════════════════════════╗
--- ║  ⚠️  DÁN URL WEBHOOK CỦA BẠN VÀO ĐÂY (Giữ nguyên dấu ngoặc kép) ║
+-- ║  ⚠️  DÁN URL WEBHOOK THẬT VÀO ĐÂY (Giữ nguyên 2 dấu ngoặc kép)  ║
+-- ║  (Lưu ý: KHÔNG dán link discord.gg, phải là discord.com/api/...)  ║
 -- ╚═══════════════════════════════════════════════════════════════════╝
 local WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN"
 
 -- Tùy chọn cấu hình
 local CHECK_INTERVAL = 60      -- 60 giây check 1 lần
-local MATERIAL_COST  = 5       -- Trừ 5 nguyên liệu mỗi khi có item mới (chỉ hiển thị log)
+local MATERIAL_COST  = 5       -- Trừ 5 nguyên liệu mỗi khi có item mới (hiển thị log)
 local SHUTDOWN_KEY   = Enum.KeyCode.P -- Nhấn P để kết thúc và gửi báo cáo
 
 -- =====================================================================
@@ -29,7 +30,7 @@ local SHARED_INV    = {}
 local baselineSet   = false
 
 -- =====================================================================
--- 1. GAME GUARD (Chỉ chạy nếu là Blox Fruit)
+-- 1. GAME GUARD (Chỉ chạy nếu đang ở Blox Fruit)
 -- =====================================================================
 local BLOX_PLACES = {[2753915549]="Sea 1",[4442272183]="Sea 2",[7449423635]="Sea 3"}
 local remotes = RS:FindFirstChild("Remotes")
@@ -42,7 +43,7 @@ end
 print("[GUARD ✅] Đã xác nhận Blox Fruit: " .. (BLOX_PLACES[game.PlaceId] or "CommF_"))
 
 -- =====================================================================
--- 2. HÀM GỬI DISCORD (Hỗ trợ mọi Executor)
+-- 2. HÀM GỬI DISCORD (Tự động nhận diện Executor)
 -- =====================================================================
 local webhookMethod = "none"
 local function sendEmbed(embeds)
@@ -123,7 +124,7 @@ local function getInventory()
 end
 
 -- =====================================================================
--- 5. GỬI THÔNG BÁO ĐĂNG NHẬP
+-- 5. THÔNG BÁO ĐĂNG NHẬP
 -- =====================================================================
 local function notifyLogin()
     sendEmbed({{
@@ -140,7 +141,7 @@ local function notifyLogin()
 end
 
 -- =====================================================================
--- 6. GỬI BÁO CÁO KẾT THÚC
+-- 6. BÁO CÁO KẾT THÚC
 -- =====================================================================
 local function notifySessionEnd(reason)
     local duration = os.time() - SESSION_START
@@ -176,7 +177,7 @@ local function notifySessionEnd(reason)
         if info.count > 0 then table.insert(groups[classify(name)], {name=name, count=info.count}) end
     end
     
-    local fields, chunk = {}, {}
+    local chunk = {}
     for cat, items in pairs(groups) do
         if #items > 0 then
             table.sort(items, function(a,b) return a.count > b.count end)
@@ -194,7 +195,7 @@ local function notifySessionEnd(reason)
 end
 
 -- =====================================================================
--- 7. VÒNG LẶP KIỂM TRA (60s/lần)
+-- 7. VÒNG LẶP KIỂM TRA (Mỗi 60s)
 -- =====================================================================
 local function checkCycle()
     local current = getInventory()
