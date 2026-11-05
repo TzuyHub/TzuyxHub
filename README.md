@@ -447,7 +447,8 @@
         }
     </script>
 </body>
-</html><!-- ═══════════════════════════════════════════════════════════════════ -->
+</html>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- TEMPLATE README CHO TỪNG TÀI KHOẢN BLOX FRUIT                    -->
 <!-- Thay [USERNAME] và các số liệu bằng dữ liệu thật của bạn          -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -578,7 +579,8 @@
 
 <sub>🤖 Generated automatically by <b>Blox Fruit Monitor v6.0</b></sub>
 
-</div>// Tự động tạo README.md cho từng tài khoản từ database.json
+</div>
+// Tự động tạo README.md cho từng tài khoản từ database.json
 const fs = require('fs');
 const path = require('path');
 
