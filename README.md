@@ -1,142 +1,87 @@
+<div align="center">
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TzuyHub Private Notification</title>
-<style>
-*{box-sizing:border-box}
-body{
- background:#080808;color:white;
- font-family:Arial;margin:0;padding:20px;
-}
-.container{
- max-width:440px;margin:30px auto;
- background:#151515;padding:22px;
- border:1px solid #333;border-radius:18px;
-}
-h2{text-align:center;color:#a855f7}
-h3{color:#c084fc}
-input,button{
- width:100%;padding:13px;margin:8px 0;
- border-radius:9px;border:1px solid #444;
- background:#222;color:white;
-}
-button{
- background:#8b5cf6;border:0;
- font-weight:bold;cursor:pointer;
-}
-.notice{
- padding:13px;background:#222;
- border-left:3px solid #a855f7;
- border-radius:8px;margin:10px 0;
- overflow-wrap:anywhere;
-}
-.status{text-align:center;color:#aaa}
-.counter{color:#c084fc}
-</style>
-</head>
-<body>
+# 🍇 Blox Fruit Monitor
 
-<div class="container">
-<h2>⚡ TZUYHUB</h2>
-<p class="status">PRIVATE ACCOUNT SYSTEM</p>
+### Hệ thống lưu trữ kho đồ & giám sát tài khoản Blox Fruit tự động
 
-<h3>👤 ACCOUNT</h3>
-<div class="notice">
-Username: <b>tuongduy</b><br>
-Account: <span style="color:#22c55e">ACTIVE</span>
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
+[![Discord](https://img.shields.io/badge/Discord-Webhook-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-6.0.0-blue?style=for-the-badge)]()
+
+**Lưu trữ kho đồ • Heartbeat • Phát hiện offline • Báo cáo Discord**
+
+[Tính năng](#-tính-năng) • [Cài đặt](#-cài-đặt) • [Cấu hình](#%EF%B8%8F-cấu-hình) • [API](#-api-endpoints) • [Triển khai](#-triển-khai) • [FAQ](#-faq)
+
 </div>
 
-<h3>🔔 PRIVATE NOTIFICATION</h3>
-<div class="notice">
-Thông báo chưa đọc:
-<b class="counter" id="counter">0</b>
-</div>
+---
 
-<div id="notifications"></div>
+## 📋 Mục lục
 
-<h3>📩 Gửi thông báo cho tài khoản</h3>
-<input id="message" placeholder="Nhập nội dung thông báo...">
-<button onclick="sendNotification()">SEND NOTIFICATION</button>
+- [Giới thiệu](#-giới-thiệu)
+- [Tính năng](#-tính-năng)
+- [Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
+- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
+- [Cài đặt](#-cài-đặt)
+- [Cấu hình](#%EF%B8%8F-cấu-hình)
+- [Sử dụng](#-sử-dụng)
+- [API Endpoints](#-api-endpoints)
+- [Triển khai](#-triển-khai)
+- [Cấu trúc dự án](#-cấu-trúc-dự-án)
+- [Bảo mật](#-bảo-mật)
+- [Troubleshooting](#-troubleshooting)
+- [FAQ](#-faq)
+- [Đóng góp](#-đóng-góp)
+- [License](#-license)
 
-<button onclick="markRead()">MARK ALL READ</button>
-<button onclick="clearHistory()" style="background:#dc2626">
-DELETE HISTORY
-</button>
+---
 
-<p class="status">TZUYHUB © 2026</p>
-</div>
+## 🎯 Giới thiệu
 
-<script>
-const KEY="tzuyhub_private_notifications";
+**Blox Fruit Monitor** là hệ thống backend Node.js kết hợp với script Roblox cho phép bạn:
 
-function getData(){
- return JSON.parse(localStorage.getItem(KEY)||"[]");
-}
+- 📦 **Lưu trữ kho đồ** Blox Fruit lên cloud (JSON storage)
+- 💓 **Giám sát hoạt động** tài khoản qua cơ chế heartbeat
+- 🔴 **Phát hiện offline** tự động khi mất kết nối
+- 📊 **Báo cáo chi tiết** về Discord với phân loại (Trái / Kiếm / Võ thuật / Súng)
+- 🟢 **Thông báo online lại** khi tài khoản kết nối trở lại
 
-function sendNotification(){
- const input=document.getElementById("message");
- const message=input.value.trim();
+Dữ liệu được lưu **an toàn** trên server riêng của bạn, không phụ thuộc bên thứ ba.
 
- if(!message){
-  alert("Vui lòng nhập nội dung!");
-  return;
- }
+---
 
- const data=getData();
+## ✨ Tính năng
 
- data.unshift({
-  message:message,
-  time:new Date().toLocaleString("vi-VN"),
-  read:false
- });
+### 📦 Lưu trữ kho đồ
+- ✅ Lưu toàn bộ inventory (tên + số lượng) lên server
+- ✅ Phân loại tự động: **Trái**, **Kiếm**, **Võ thuật**, **Súng**, **Khác**
+- ✅ Auto-backup (5 bản gần nhất) — chống corrupt
+- ✅ Atomic write — không bao giờ mất dữ liệu giữa chừng
+- ✅ Truy vấn kho đồ qua REST API
 
- localStorage.setItem(KEY,JSON.stringify(data));
- input.value="";
- render();
+### 💓 Giám sát hoạt động
+- ✅ Heartbeat mỗi **60 giây** (cấu hình được)
+- ✅ Phát hiện offline sau **3 phút** không ping
+- ✅ Báo cáo tự động khi mất kết nối đột ngột
+- ✅ Báo cáo ngay khi nhấn phím `P` (disconnect chủ động)
+- ✅ Thông báo "online trở lại" khi kết nối lại
 
- alert("Đã tạo thông báo riêng!");
-}
+### 📊 Discord Notification
+- ✅ Embed đẹp, phân loại theo màu
+- ✅ Chống spam (`offlineNotified` flag)
+- ✅ Auto-retry khi rate limit (429)
+- ✅ Queue system — không bị mất tin nhắn
+- ✅ Chia nhỏ embed khi kho đồ lớn (>10 embeds)
 
-function render(){
- const data=getData();
+### 🛡️ Bảo mật & Độ tin cậy
+- ✅ Header `X-Secret` bắt buộc cho write operations
+- ✅ Game Guard — chỉ chạy trên Blox Fruit thật
+- ✅ Graceful shutdown (SIGTERM/SIGINT)
+- ✅ Error recovery khi DB corrupt
+- ✅ Path traversal & injection safe
 
- document.getElementById("counter").textContent=
- data.filter(x=>!x.read).length;
+---
 
- document.getElementById("notifications").innerHTML=
- data.map((x,i)=>`
- <div class="notice">
- <b>🔔 ${x.read?"Đã đọc":"Thông báo mới"}</b>
- <p>${escapeHTML(x.message)}</p>
- <small>${escapeHTML(x.time)}</small>
- </div>
- `).join("")||'<p class="status">Chưa có thông báo.</p>';
-}
-
-function escapeHTML(s){
- return String(s).replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",
- '"':"&quot;","'":"&#39;"
- }[c]));
-}
-
-function markRead(){
- const data=getData().map(x=>({...x,read:true}));
- localStorage.setItem(KEY,JSON.stringify(data));
- render();
-}
-
-function clearHistory(){
- if(confirm("Xóa tất cả thông báo?")){
-  localStorage.removeItem(KEY);
-  render();
- }
-}
-
-render();
-</script>
-</body>
-</html>
+## 🏗️ Kiến trúc hệ thống
